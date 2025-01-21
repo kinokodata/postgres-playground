@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${DB_NAME:-defaultdb}
+      POSTGRES_USER: ${DB_USER:-defaultuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-defaultpassword}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    command: >
+      postgres 
+      -c log_timezone=Asia/Tokyo 
+      -c timezone=Asia/Tokyo
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-adminpassword}
+      TZ: Asia/Tokyo
+    ports:
+      - "38080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  pgadmin_data:
